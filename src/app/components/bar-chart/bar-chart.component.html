@@ -1,0 +1,33 @@
+<div class="card">
+  <div class="card-body">
+    <plotly-plot [divId]="_data[dataService.rawForm.primaryIDs]+'bar'" [data]="graphData" [layout]="graphLayout" [updateOnDataChange]="true" [updateOnLayoutChange]="true"></plotly-plot>
+  </div>
+</div>
+<div class="row mt-2">
+  <div class="col-6">
+    <div class="card">
+      <div class="card-body">
+        <plotly-plot [divId]="_data[dataService.rawForm.primaryIDs]+'average'" [data]="graphDataAverage" [layout]="graphLayoutAverage" [updateOnDataChange]="true" [updateOnLayoutChange]="true"></plotly-plot>
+      </div>
+    </div>
+  </div>
+  <div class="col-6">
+    <div class="card">
+      <div class="card-body">
+        <plotly-plot [divId]="_data[dataService.rawForm.primaryIDs]+'violin'" [data]="graphDataViolin" [layout]="graphLayoutViolin" [updateOnDataChange]="true" [updateOnLayoutChange]="true"></plotly-plot>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="row mt-2">
+  <div class="d-flex">
+    <div ngbDropdown class="d-inline-block">
+      <button class="btn btn-outline-primary ml-2" id="dropdownDownload{{_data[dataService.rawForm.primaryIDs]}}" ngbDropdownToggle>Download Plot</button>
+      <div ngbDropdownMenu>
+        <button ngbDropdownItem (click)="download('bar')">Download Bar Chart</button>
+        <button ngbDropdownItem (click)="download('average')">Download Average Bar Chart</button>
+        <button ngbDropdownItem (click)="download('violin')">Download Violin Plot</button>
+      </div>
+    </div>
+  </div>
+</div>

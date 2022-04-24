@@ -1,18 +1,75 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-
+import * as PlotlyJS from 'plotly.js-dist-min';
+import { PlotlyModule } from 'angular-plotly.js';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { HomeComponent } from './components/home/home.component';
+import { FileInputWidgetComponent } from './components/file-input-widget/file-input-widget.component';
+import { FileFormComponent } from './components/file-form/file-form.component';
+import {FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {HttpClient, HttpClientModule} from "@angular/common/http";
+import { VolcanoPlotComponent } from './components/volcano-plot/volcano-plot.component';
+import { VolcanoAndCytoComponent } from './components/volcano-and-cyto/volcano-and-cyto.component';
+import { CytoplotComponent } from './components/cytoplot/cytoplot.component';
+import { ProteinSelectionsComponent } from './components/protein-selections/protein-selections.component';
+import { BatchSearchComponent } from './components/batch-search/batch-search.component';
+import { NetworkInteractionsComponent } from './components/network-interactions/network-interactions.component';
+import { RawDataViewerComponent } from './components/raw-data-viewer/raw-data-viewer.component';
+import { RawDataBlockComponent } from './components/raw-data-block/raw-data-block.component';
+import { BarChartComponent } from './components/bar-chart/bar-chart.component';
+import { ProteinDomainPlotComponent } from './components/protein-domain-plot/protein-domain-plot.component';
+import { ProteinInformationComponent } from './components/protein-information/protein-information.component';
+import { ProteomicsDbComponent } from './components/proteomics-db/proteomics-db.component';
+import { StringDbComponent } from './components/string-db/string-db.component';
+import { InteractomeAtlasComponent } from './components/interactome-atlas/interactome-atlas.component';
+import { PdbViewerComponent } from './components/pdb-viewer/pdb-viewer.component';
+import { FdrCurveComponent } from './components/fdr-curve/fdr-curve.component';
+import { VolcanoColorsComponent } from './components/volcano-colors/volcano-colors.component';
+import {ColorPickerModule} from "ngx-color-picker";
+import { QuickNavigationComponent } from './components/quick-navigation/quick-navigation.component';
+import { ProfilePlotComponent } from './components/profile-plot/profile-plot.component';
+import { ProfileCompareComponent } from './components/profile-compare/profile-compare.component';
+PlotlyModule.plotlyjs = PlotlyJS;
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    HomeComponent,
+    FileInputWidgetComponent,
+    FileFormComponent,
+    VolcanoPlotComponent,
+    VolcanoAndCytoComponent,
+    CytoplotComponent,
+    ProteinSelectionsComponent,
+    BatchSearchComponent,
+    NetworkInteractionsComponent,
+    RawDataViewerComponent,
+    RawDataBlockComponent,
+    BarChartComponent,
+    ProteinDomainPlotComponent,
+    ProteinInformationComponent,
+    ProteomicsDbComponent,
+    StringDbComponent,
+    InteractomeAtlasComponent,
+    PdbViewerComponent,
+    FdrCurveComponent,
+    VolcanoColorsComponent,
+    QuickNavigationComponent,
+    ProfilePlotComponent,
+    ProfileCompareComponent
   ],
-  imports: [
-    BrowserModule,
-    AppRoutingModule
-  ],
-  providers: [],
+    imports: [
+        BrowserModule,
+        AppRoutingModule,
+        NgbModule,
+        FormsModule,
+        HttpClientModule,
+        PlotlyModule,
+        ReactiveFormsModule,
+        ColorPickerModule
+    ],
+  providers: [HttpClient],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
