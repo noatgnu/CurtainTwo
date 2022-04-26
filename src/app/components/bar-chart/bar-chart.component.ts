@@ -4,6 +4,7 @@ import {Series} from "data-forge";
 import {UniprotService} from "../../uniprot.service";
 import {PlotlyService} from "angular-plotly.js";
 import {WebService} from "../../web.service";
+import {AnovaService} from "../../anova.service";
 
 @Component({
   selector: 'app-bar-chart',
@@ -13,6 +14,10 @@ import {WebService} from "../../web.service";
 export class BarChartComponent implements OnInit {
   _data: any = {}
   uni: any = {}
+  comparisons: any[] = []
+  conditionA: string = ""
+  conditionB: string = ""
+  conditions: string[] = []
   @Input() set data(value: any) {
     this._data = value
     this.title = "<b>" + this._data[this.dataService.rawForm.primaryIDs] + "</b>"
@@ -29,6 +34,7 @@ export class BarChartComponent implements OnInit {
     this.drawAverageBarChart()
   }
   title = ""
+  graph: any = {}
   graphData: any[] = []
   graphLayout: any = {
     xaxis: {
@@ -87,7 +93,7 @@ export class BarChartComponent implements OnInit {
     },
     margin: {r: 40, l: 40, b: 120, t: 100}
   }
-  constructor(private web: WebService, public dataService: DataService, private uniprot: UniprotService) {
+  constructor(private anova: AnovaService, private web: WebService, public dataService: DataService, private uniprot: UniprotService) {
     this.dataService.finishedProcessingData.subscribe(data => {
       if (data) {
 
@@ -147,6 +153,17 @@ export class BarChartComponent implements OnInit {
         })
       }
     }
+    //const combos = this.dataService.pairwise(this.dataService.conditions)
+    //const comparisons = []
+    // for (const c of combos) {
+    //   const a = graph[c[0]]
+    //   const b = graph[c[1]]
+    //   comparisons.push({
+    //     a: c[0], b: c[1], comparison: this.anova.calculateAnova(a.y, b.y)
+    //   })
+    // }
+    this.graph = graph
+    // this.comparisons = comparisons
     this.graphLayout.shapes = shapes
 
     this.graphLayout.xaxis.tickvals = tickvals
@@ -229,5 +246,15 @@ export class BarChartComponent implements OnInit {
     this.graphLayoutViolin.xaxis.tickvals = tickVals
     this.graphLayoutViolin.xaxis.ticktext = tickText
     this.graphDataViolin = graphViolin
+  }
+
+  performTest(testType: string) {
+    const a = this.graph[this.conditionA]
+    const b = this.graph[this.conditionB]
+    switch (testType) {
+      case "anova":
+        this.comparisons = [{a: this.conditionA, b: this.conditionB, comparison: this.anova.calculateAnova(a.y, b.y)}]
+        break
+    }
   }
 }

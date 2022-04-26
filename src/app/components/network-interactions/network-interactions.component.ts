@@ -271,7 +271,10 @@ export class NetworkInteractionsComponent implements OnInit {
       const primaryIDs = this.data.getPrimaryIDsFromGeneNames(this.geneMap[gene[gene.length-1]])
       if (primaryIDs.length > 0) {
         const ind = this.data.selected.indexOf(primaryIDs[0])
-        this.data.page = ind + 1
+        const newPage = ind + 1
+        if (this.data.page !== newPage) {
+          this.data.page = ind + 1
+        }
         this.scroll.scrollToID(primaryIDs[0]+"scrollID")
       }
     } else if (e.startsWith("edge-")) {

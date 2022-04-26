@@ -2,6 +2,7 @@ import {Component, Input, OnInit} from '@angular/core';
 import {DataFrame, IDataFrame, Series} from "data-forge";
 import {DataService} from "../../data.service";
 import {UniprotService} from "../../uniprot.service";
+import {ToastService} from "../../toast.service";
 
 @Component({
   selector: 'app-profile-plot',
@@ -41,7 +42,7 @@ export class ProfilePlotComponent implements OnInit {
     showlegend: true
   }
   graphSelected: any[] = []
-  constructor(private dataService: DataService, private uniprot: UniprotService) {
+  constructor(private toast: ToastService, private dataService: DataService, private uniprot: UniprotService) {
     this.dataService.selectionUpdateTrigger.asObservable().subscribe(data => {
       this.drawSelected().then()
     })
@@ -91,6 +92,7 @@ export class ProfilePlotComponent implements OnInit {
     this.graphLayout.xaxis.ticktext = ticktext
 
     this.graphBox = graphBox
+    this.toast.show("Profile Plot", "Completed Constructing Box Plots").then(r => {})
   }
 
   async drawSelected() {

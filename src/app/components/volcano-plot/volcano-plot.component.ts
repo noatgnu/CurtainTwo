@@ -53,8 +53,12 @@ export class VolcanoPlotComponent implements OnInit {
   breakColor: boolean = false
 
   drawVolcano() {
-    let currentColors = Object.values(this.settings.settings.colorMap)
-
+    let currentColors: string[] = []
+    if (this.settings.settings.colorMap) {
+      currentColors = Object.values(this.settings.settings.colorMap)
+    } else {
+      this.settings.settings.colorMap = {}
+    }
     let currentPosition = 0
     let fdrCurve: IDataFrame = new DataFrame()
     if (this.settings.settings.fdrCurveTextEnable) {

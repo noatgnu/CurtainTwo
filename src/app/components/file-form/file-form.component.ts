@@ -1,7 +1,7 @@
 import {Component, EventEmitter, OnInit, Output} from '@angular/core';
 import {InputFile} from "../../classes/input-file";
 import {DataService} from "../../data.service";
-import {Series} from "data-forge";
+import {IDataFrame, Series} from "data-forge";
 import {UniprotService} from "../../uniprot.service";
 import {SettingsService} from "../../settings.service";
 
@@ -12,6 +12,8 @@ import {SettingsService} from "../../settings.service";
 })
 export class FileFormComponent implements OnInit {
   progressBar: any = {value: 0, text: ""}
+  transformedFC: boolean = false
+  transformedP: boolean = false
   @Output() finished: EventEmitter<boolean> = new EventEmitter<boolean>()
   constructor(public data: DataService, private uniprot: UniprotService, public settings: SettingsService) {
     this.uniprot.uniprotProgressBar.subscribe(data => {
@@ -42,30 +44,76 @@ export class FileFormComponent implements OnInit {
   }
   processFiles() {
     this.finished.emit(false)
+
+    if (this.data.differentialForm.comparisonSelect === "" || this.data.differentialForm.comparisonSelect === undefined) {
+      this.data.differentialForm.comparisonSelect = this.data.differential.df.first()[this.data.differentialForm.comparison]
+    }
     const totalSampleNumber = this.data.rawForm.samples.length
     let sampleNumber = 0
+    const conditions: string[] = []
     for (const s of this.data.rawForm.samples) {
       const condition_replicate = s.split(".")
       const replicate = condition_replicate[condition_replicate.length-1]
       const condition = condition_replicate.slice(0, condition_replicate.length-1).join(".")
+      if (!conditions.includes(condition)) {
+        conditions.push(condition)
+      }
       this.data.sampleMap[s] = {replicate: replicate, condition: condition}
       this.data.raw.df = this.data.raw.df.withSeries(s, new Series(this.convertToNumber(this.data.raw.df.getSeries(s).toArray()))).bake()
       sampleNumber ++
       this.updateProgressBar(sampleNumber*100/totalSampleNumber, "Processed "+s+" sample data")
     }
+
+    this.data.conditions = conditions
+    this.data.differential.df = this.toUpperCaseColumn(this.data.differentialForm.primaryIDs, this.data.differential.df)
+    this.data.raw.df = this.toUpperCaseColumn(this.data.rawForm.primaryIDs, this.data.raw.df)
     this.data.differential.df = this.data.differential.df.withSeries(this.data.differentialForm.foldChange, new Series(this.convertToNumber(this.data.differential.df.getSeries(this.data.differentialForm.foldChange).toArray()))).bake()
     if (this.data.differentialForm.transformFC) {
-      this.data.differential.df = this.data.differential.df.withSeries(this.data.differentialForm.foldChange, new Series(this.log2Convert(this.data.differential.df.getSeries(this.data.differentialForm.foldChange).toArray()))).bake()
+      if (!this.transformedFC) {
+        this.data.differential.df = this.data.differential.df.withSeries(this.data.differentialForm.foldChange, new Series(this.log2Convert(this.data.differential.df.getSeries(this.data.differentialForm.foldChange).toArray()))).bake()
+        this.transformedFC = true
+      }
     }
 
     this.updateProgressBar(50, "Processed fold change")
     this.data.differential.df = this.data.differential.df.withSeries(this.data.differentialForm.significant, new Series(this.convertToNumber(this.data.differential.df.getSeries(this.data.differentialForm.significant).toArray()))).bake()
     if (this.data.differentialForm.transformSignificant) {
-      this.data.differential.df = this.data.differential.df.withSeries(this.data.differentialForm.significant, new Series(this.log10Convert(this.data.differential.df.getSeries(this.data.differentialForm.significant).toArray()))).bake()
+      if (!this.transformedP) {
+        this.data.differential.df = this.data.differential.df.withSeries(this.data.differentialForm.significant, new Series(this.log10Convert(this.data.differential.df.getSeries(this.data.differentialForm.significant).toArray()))).bake()
+        this.transformedP = true
+      }
     }
     this.updateProgressBar(100, "Processed significant")
+    const currentDF = this.data.differential.df.where(r => r[this.data.differentialForm.comparison] === this.data.differentialForm.comparisonSelect)
+    const fc = currentDF.getSeries(this.data.differentialForm.foldChange).where(i => !isNaN(i)).bake()
+    const sign = currentDF.getSeries(this.data.differentialForm.significant).where(i => !isNaN(i)).bake()
+    this.data.minMax = {
+      fcMin: fc.min(),
+      fcMax: fc.max(),
+      pMin: sign.min(),
+      pMax: sign.max()
+    }
 
+    this.data.currentDF = this.data.differential.df.where(r => r[this.data.differentialForm.comparison] === this.data.differentialForm.comparisonSelect)
+    this.data.primaryIDsList = this.data.currentDF.getSeries(this.data.differentialForm.primaryIDs).distinct().toArray()
+    for (const p of this.data.primaryIDsList) {
+      if (!this.data.primaryIDsMap[p])  {
+        this.data.primaryIDsMap[p] = {}
+        this.data.primaryIDsMap[p][p] = true
+      }
+      for (const n of p.split(";")) {
+        if (!this.data.primaryIDsMap[n]) {
+          this.data.primaryIDsMap[n] = {}
+        }
+        this.data.primaryIDsMap[n][p] = true
+      }
+    }
     this.processUniProt()
+  }
+
+  toUpperCaseColumn(col: string, df: IDataFrame) {
+    const d = df.getSeries(col).bake().toArray()
+    return df.withSeries(col, new Series(d.map(v => v.toUpperCase()))).bake()
   }
 
   convertToNumber(arr: string[]) {
@@ -113,29 +161,6 @@ export class FileFormComponent implements OnInit {
       if (accList.length > 0) {
         this.uniprot.UniProtParseGet(accList, false).then(r=> {
           if (r) {
-            const currentDF = this.data.differential.df.where(r => r[this.data.differentialForm.comparison] === this.data.differentialForm.comparisonSelect)
-            const fc = currentDF.getSeries(this.data.differentialForm.foldChange).where(i => !isNaN(i)).bake()
-            const sign = currentDF.getSeries(this.data.differentialForm.significant).where(i => !isNaN(i)).bake()
-            this.data.minMax = {
-              fcMin: fc.min(),
-              fcMax: fc.max(),
-              pMin: sign.min(),
-              pMax: sign.max()
-            }
-            this.data.currentDF = this.data.differential.df.where(r => r[this.data.differentialForm.comparison] === this.data.differentialForm.comparisonSelect)
-            this.data.primaryIDsList = this.data.currentDF.getSeries(this.data.differentialForm.primaryIDs).distinct().toArray()
-            for (const p of this.data.primaryIDsList) {
-              if (!this.data.primaryIDsMap[p])  {
-                this.data.primaryIDsMap[p] = {}
-                this.data.primaryIDsMap[p][p] = true
-              }
-              for (const n of p.split(";")) {
-                if (!this.data.primaryIDsMap[n]) {
-                  this.data.primaryIDsMap[n] = {}
-                }
-                this.data.primaryIDsMap[n][p] = true
-              }
-            }
             const allGenes: string[] = []
             for (const p of this.data.primaryIDsList) {
               const uni = this.uniprot.getUniprotFromPrimary(p)

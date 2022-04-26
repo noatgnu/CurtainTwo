@@ -19,6 +19,7 @@ export class DataService {
   genesMap: any = {}
   primaryIDsMap: any = {}
   selectedComparison: string[] = []
+  conditions: string[] = []
   get allGenes(): string[] {
     return this._allGenes;
   }
@@ -60,7 +61,7 @@ export class DataService {
     pMax: 0
   }
   page: number = 1
-  pageSize: number = 10
+  pageSize: number = 5
 
   significantGroup(x: number, y: number) {
     const ylog = -Math.log10(this.settings.settings.pCutoff)
@@ -147,4 +148,12 @@ export class DataService {
   }
 
   selectedGenes: string[] = []
+
+  pairwise(list: any[]): any[] {
+    if (list.length < 2) { return []; }
+    const first = list[0],
+      rest  = list.slice(1),
+      pairs = rest.map(function (x) { return [first, x]; });
+    return pairs.concat(this.pairwise(rest));
+  }
 }

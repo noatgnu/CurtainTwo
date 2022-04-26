@@ -1,7 +1,9 @@
 <div class="container mt-4">
-  <div class="card">
-    <div class="card-body" style="width: 100%">
-      <plotly-plot [data]="graphData" [layout]="graphLayout" [updateOnLayoutChange]="true" [updateOnDataChange]="true"></plotly-plot>
-    </div>
-  </div>
+  <ngb-accordion>
+    <ngb-panel title="Profile Plot">
+      <ng-template ngbPanelContent>
+        <plotly-plot [data]="graphData" [layout]="graphLayout" [updateOnLayoutChange]="true" [updateOnDataChange]="true"></plotly-plot>
+      </ng-template>
+    </ngb-panel>
+  </ngb-accordion>
 </div>

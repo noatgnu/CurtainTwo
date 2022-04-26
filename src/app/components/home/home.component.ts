@@ -13,6 +13,9 @@ import {UniprotService} from "../../uniprot.service";
 import {ScrollService} from "../../scroll.service";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {ProfileCompareComponent} from "../profile-compare/profile-compare.component";
+import {CorrelationMatrixComponent} from "../correlation-matrix/correlation-matrix.component";
+import {ToastService} from "../../toast.service";
+import {CitationComponent} from "../citation/citation.component";
 
 @Component({
   selector: 'app-home',
@@ -24,16 +27,26 @@ export class HomeComponent implements OnInit {
   rawFiltered: IDataFrame = new DataFrame()
   uniqueLink: string = ""
   filterModel: string = ""
-  constructor(private modal: NgbModal, private route: ActivatedRoute, public data: DataService, private settings: SettingsService, public web: WebService, private uniprot: UniprotService, private scroll: ScrollService) {
+  currentID: string = ""
+  constructor(private toast: ToastService, private modal: NgbModal, private route: ActivatedRoute, public data: DataService, private settings: SettingsService, public web: WebService, private uniprot: UniprotService, private scroll: ScrollService) {
+    if (location.protocol === "https:" && location.hostname === "curtainptm.proteo.info") {
+      this.toast.show("Initialization", "Error: The webpage requires the url protocol to be http instead of https")
+    }
+
     this.route.params.subscribe(params => {
       if (params) {
         if (params["settings"]) {
-          this.web.postSettings(params["settings"], "").subscribe(data => {
-            if (data.body) {
-              const a = JSON.parse(<string>data.body, this.web.reviver)
-              this.restoreSettings(a).then()
-            }
-          })
+          this.toast.show("Initialization", "Fetching data from session " + params["settings"])
+          if (this.currentID !== params["settings"]) {
+            this.currentID = params["settings"]
+            this.web.postSettings(params["settings"], "").subscribe(data => {
+              if (data.body) {
+
+                const a = JSON.parse(<string>data.body, this.web.reviver)
+                this.restoreSettings(a).then()
+              }
+            })
+          }
         }
       }
     })
@@ -100,7 +113,10 @@ export class HomeComponent implements OnInit {
         break
     }
     const ind = this.data.selected.indexOf(primaryIDs)
-    this.data.page = ind + 1
+    const newPage = ind + 1
+    if (this.data.page !== newPage) {
+      this.data.page = ind + 1
+    }
     this.scroll.scrollToID(primaryIDs+"scrollID")
   }
 
@@ -126,9 +142,11 @@ export class HomeComponent implements OnInit {
   }
 
   async restoreSettings(object: any) {
+
     if (typeof object.settings === "string") {
       object.settings = JSON.parse(object.settings)
     }
+    console.log(object)
     if (object.settings.version) {
       if (object.settings.version === 2) {
         this.data.selected = object.selections
@@ -141,6 +159,7 @@ export class HomeComponent implements OnInit {
         this.data.fetchUniprot = object.fetchUniprot
       }
     } else {
+      this.data.fetchUniprot = object.settings.uniprot
       if (!object.settings.colormap) {
         object.settings["colormap"] = {}
       }
@@ -160,7 +179,12 @@ export class HomeComponent implements OnInit {
         this.data.differentialForm.foldChange = object.settings.dataColumns["processedLog2FC"]
         this.data.differentialForm.comparison = object.settings.dataColumns["processedCompLabel"]
         this.data.differentialForm.comparisonSelect = object.settings.dataColumns["comparison"]
-        this.data.differentialForm.transformSignificant = true
+        if (object.settings.antilogP) {
+          this.data.differentialForm.transformSignificant = false
+        } else {
+          this.data.differentialForm.transformSignificant = true
+        }
+
       }
       if (object.selections) {
         for (const s in object.selections) {
@@ -209,4 +233,13 @@ export class HomeComponent implements OnInit {
     ref.componentInstance.selected = this.data.selectedComparison
     ref.componentInstance.data = this.data.raw.df
   }
+
+  openCorrelationMatrix() {
+    this.modal.open(CorrelationMatrixComponent, {size: "xl"})
+  }
+
+  openResourceCitation() {
+    this.modal.open(CitationComponent)
+  }
 }
+

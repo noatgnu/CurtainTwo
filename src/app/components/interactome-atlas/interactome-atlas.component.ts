@@ -3,6 +3,7 @@ import {InteractomeAtlasService} from "../../interactome-atlas.service";
 import {UniprotService} from "../../uniprot.service";
 import {DataService} from "../../data.service";
 import {SettingsService} from "../../settings.service";
+import {ToastService} from "../../toast.service";
 
 @Component({
   selector: 'app-interactome-atlas',
@@ -33,7 +34,7 @@ export class InteractomeAtlasComponent implements OnInit {
   interactions: any = {}
   drawData: any = {data: [], stylesheet: []}
   evidences: any = {}
-  constructor(private uniprot: UniprotService, private interac: InteractomeAtlasService, private dataService: DataService, private settings: SettingsService) { }
+  constructor(private toast: ToastService, private uniprot: UniprotService, private interac: InteractomeAtlasService, private dataService: DataService, private settings: SettingsService) { }
 
   ngOnInit(): void {
   }
@@ -88,61 +89,65 @@ export class InteractomeAtlasComponent implements OnInit {
     const nodes: any[] = []
     const interacted: string[] = []
     const interactedMap: Map<string, any[]> = new Map<string, any[]>()
-    for (const i of this.interactions["all_interactions"]) {
-      let oScore = parseFloat(i["score"])
-      this.evidences[i["interaction_id"]] = []
-      for (const d of i["dataset_array"]) {
-        this.evidences[i["interaction_id"]].push(d)
-      }
-      interactedMap.set("edge"+i["interaction_id"], this.evidences[i["interaction_id"]].slice())
-      let classes: string[] = []
-      const interactions: string[] = []
-      for (const interaction of i["interaction_category_array"]["interaction_category_array"]) {
-        interactions.push(interaction["category_name"])
-      }
-      classes.push(interactions.join(""))
-      classes.push(i["interaction_id"] + i["interactor_A"]["protein_id"])
-      let score = oScore
-      if (isNaN(oScore)) {
-        score = 2
-        classes.push("noscore")
-      } else {
-        score = 2 + 3*oScore
-      }
-      if (!interactedMap.has("node"+i["interactor_A"]["protein_id"])) {
-        interactedMap.set("node"+i["interactor_A"]["protein_id"], this.evidences[i["interaction_id"]].slice())
-      } else {
-        for (const i2 of this.evidences[i["interaction_id"]]) {
-          // @ts-ignore
-          interactedMap.get("node"+i["interactor_A"]["protein_id"]).push(i2)
+    if (this.interactions["all_interactions"].length > 0) {
+      for (const i of this.interactions["all_interactions"]) {
+        let oScore = parseFloat(i["score"])
+        this.evidences[i["interaction_id"]] = []
+        for (const d of i["dataset_array"]) {
+          this.evidences[i["interaction_id"]].push(d)
         }
-      }
-      if (!interactedMap.has("node"+i["interactor_B"]["protein_id"])) {
-        interactedMap.set("node"+i["interactor_B"]["protein_id"], this.evidences[i["interaction_id"]].slice())
-      } else {
-        for (const i2 of this.evidences[i["interaction_id"]]) {
-          // @ts-ignore
-          interactedMap.get("node"+i["interactor_B"]["protein_id"]).push(i2)
+        interactedMap.set("edge"+i["interaction_id"], this.evidences[i["interaction_id"]].slice())
+        let classes: string[] = []
+        const interactions: string[] = []
+        for (const interaction of i["interaction_category_array"]["interaction_category_array"]) {
+          interactions.push(interaction["category_name"])
         }
-      }
-      if (this.enableFilter) {
-        if (!isNaN(oScore)) {
-          if (oScore > this.cutoff) {
-            interacted.push(i["interactor_A"]["protein_id"])
-            interacted.push(i["interactor_B"]["protein_id"])
-            nodes.push({
-              data: {id: "edge"+i["interaction_id"], source: "node"+i["interactor_A"]["protein_id"], target: "node"+i["interactor_B"]["protein_id"], score: score},
-              classes: classes.join(" ")
-            })
-
+        classes.push(interactions.join(""))
+        classes.push(i["interaction_id"] + i["interactor_A"]["protein_id"])
+        let score = oScore
+        if (isNaN(oScore)) {
+          score = 2
+          classes.push("noscore")
+        } else {
+          score = 2 + 3*oScore
+        }
+        if (!interactedMap.has("node"+i["interactor_A"]["protein_id"])) {
+          interactedMap.set("node"+i["interactor_A"]["protein_id"], this.evidences[i["interaction_id"]].slice())
+        } else {
+          for (const i2 of this.evidences[i["interaction_id"]]) {
+            // @ts-ignore
+            interactedMap.get("node"+i["interactor_A"]["protein_id"]).push(i2)
           }
         }
-      } else {
-        nodes.push({
-          data: {id: "edge"+i["interaction_id"], source: "node"+i["interactor_A"]["protein_id"], target: "node"+i["interactor_B"]["protein_id"], score: score},
-          classes: classes.join(" ")
-        })
+        if (!interactedMap.has("node"+i["interactor_B"]["protein_id"])) {
+          interactedMap.set("node"+i["interactor_B"]["protein_id"], this.evidences[i["interaction_id"]].slice())
+        } else {
+          for (const i2 of this.evidences[i["interaction_id"]]) {
+            // @ts-ignore
+            interactedMap.get("node"+i["interactor_B"]["protein_id"]).push(i2)
+          }
+        }
+        if (this.enableFilter) {
+          if (!isNaN(oScore)) {
+            if (oScore > this.cutoff) {
+              interacted.push(i["interactor_A"]["protein_id"])
+              interacted.push(i["interactor_B"]["protein_id"])
+              nodes.push({
+                data: {id: "edge"+i["interaction_id"], source: "node"+i["interactor_A"]["protein_id"], target: "node"+i["interactor_B"]["protein_id"], score: score},
+                classes: classes.join(" ")
+              })
+
+            }
+          }
+        } else {
+          nodes.push({
+            data: {id: "edge"+i["interaction_id"], source: "node"+i["interactor_A"]["protein_id"], target: "node"+i["interactor_B"]["protein_id"], score: score},
+            classes: classes.join(" ")
+          })
+        }
       }
+    } else {
+      this.toast.show('Interactome Atlas', "No interactions data could be found for " + this.geneName).then(r => {})
     }
 
     this.interactedMap = interactedMap

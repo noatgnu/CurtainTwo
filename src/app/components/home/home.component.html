@@ -4,6 +4,20 @@
     <ng-container *ngIf="finished">
       <a *ngIf="uniqueLink !== ''" href="{{uniqueLink}}" class="ml-2 text-success">{{uniqueLink}}</a>
       <div class="d-flex">
+        <div class="p-2">
+          <div ngbDropdown class="d-inline-block">
+            <button class="btn btn-outline-primary ml-2" id="dropdownSession" ngbDropdownToggle>Session</button>
+            <div ngbDropdownMenu aria-labelledby="dropdownSession">
+              <button ngbDropdownItem (click)="saveSession()">Save Session</button>
+              <button ngbDropdownItem (click)="clearSelections()">Clear Selections</button>
+              <button ngbDropdownItem (click)="web.downloadFile('different.txt', data.differential.originalFile)">Download Differential Analysis File</button>
+              <button ngbDropdownItem (click)="web.downloadFile('raw.txt', data.raw.originalFile)">Download Raw File</button>
+              <button ngbDropdownItem (click)="openCorrelationMatrix()">
+                Correlation Matrix
+              </button>
+            </div>
+          </div>
+        </div>
         <button *ngIf="data.selectedComparison.length > 1" class="btn btn-secondary p-2" (click)="openProfileCompare()">
           Profile Compare ({{data.selectedComparison.length}})
         </button>
@@ -22,17 +36,6 @@
         </div>
         <div class="p-2">
           <button class="btn btn-primary" (click)="scrollTo()">Go to</button>
-        </div>
-        <div class="p-2">
-          <div ngbDropdown class="d-inline-block">
-            <button class="btn btn-outline-primary ml-2" id="dropdownSession" ngbDropdownToggle>Session</button>
-            <div ngbDropdownMenu aria-labelledby="dropdownSession">
-              <button ngbDropdownItem (click)="saveSession()">Save Session</button>
-              <button ngbDropdownItem (click)="clearSelections()">Clear Selections</button>
-              <button ngbDropdownItem (click)="web.downloadFile('different.txt', data.differential.originalFile)">Differential Analysis File</button>
-              <button ngbDropdownItem (click)="web.downloadFile('raw.txt', data.raw.originalFile)">Raw File</button>
-            </div>
-          </div>
         </div>
       </div>
     </ng-container>
@@ -53,3 +56,27 @@
     <app-raw-data-viewer [data]="rawFiltered"></app-raw-data-viewer>
   </div>
 </ng-container>
+<div class="container-fluid mt-4">
+  <div class="bg-light">
+    <div class="container">
+      <footer class="py-5">
+        <div class="col-2">
+          <ul class="nav flex-column">
+            <li class="nav-item">
+              <a class="nav-link p-0 text-muted" href="#" (click)="openResourceCitation()">
+                Resource Citation
+              </a>
+            </li>
+          </ul>
+        </div>
+        <div class="col-2"></div>
+        <div class="col-2"></div>
+        <div class="col-4">
+
+        </div>
+      </footer>
+    </div>
+  </div>
+
+</div>
+
