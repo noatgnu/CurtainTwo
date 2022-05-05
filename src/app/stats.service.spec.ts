@@ -1,13 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 
-import { AnovaService } from './anova.service';
+import { StatsService } from './anova.service';
 
 describe('AnovaService', () => {
-  let service: AnovaService;
+  let service: StatsService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
-    service = TestBed.inject(AnovaService);
+    service = TestBed.inject(StatsService);
   });
 
   it('should be created', () => {

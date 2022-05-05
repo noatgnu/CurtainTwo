@@ -94,7 +94,26 @@ export class UniprotService {
         }
         r["Subcellular location [CC]"] = subLoc
       }
+      if (r["Modified residue"]) {
+        const mods = r["Modified residue"].split("; ")
+        let modRes: any[] = []
+        let modPosition = -1
+        let modType = ""
+        for (const m of mods) {
 
+          if (m.startsWith("MOD_RES")) {
+            modPosition = parseInt(m.split(" ")[1]) -1
+          } else if (m.indexOf("note=") > -1) {
+            const modre = /".+"/.exec(m)
+            if (modre !== null) {
+              modType = modre[0]
+              modRes.push({position: modPosition, modType: modType.replace(/"/g, "")})
+            }
+          }
+        }
+
+        r["Modified residue"] = modRes
+      }
       if (r["Domain [FT]"]) {
         let domains: any[] = []
         let l: number = 0;

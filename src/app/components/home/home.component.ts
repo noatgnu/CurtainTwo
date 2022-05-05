@@ -131,7 +131,8 @@ export class HomeComponent implements OnInit {
       selectionsMap: this.data.selectedMap,
       selectionsName: this.data.selectOperationNames,
       settings: this.settings.settings,
-      fetchUniprot: this.data.fetchUniprot
+      fetchUniprot: this.data.fetchUniprot,
+      annotatedData: this.data.annotatedData
     }
     this.web.putSettings(data).subscribe(data => {
       if (data.body) {
@@ -157,6 +158,9 @@ export class HomeComponent implements OnInit {
         this.data.rawForm = new Raw()
         this.data.rawForm.restore(object.rawForm)
         this.data.fetchUniprot = object.fetchUniprot
+        if (object.annotatedData) {
+          this.data.annotatedData = object.annotatedData
+        }
       }
     } else {
       this.data.fetchUniprot = object.settings.uniprot
@@ -184,7 +188,6 @@ export class HomeComponent implements OnInit {
         } else {
           this.data.differentialForm.transformSignificant = true
         }
-
       }
       if (object.selections) {
         for (const s in object.selections) {
@@ -200,7 +203,6 @@ export class HomeComponent implements OnInit {
           }
         }
       }
-
     }
     if (/\t/.test(object.raw)) {
       // @ts-ignore

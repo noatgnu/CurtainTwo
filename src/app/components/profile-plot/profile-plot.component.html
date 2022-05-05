@@ -1,9 +1,1 @@
-<div class="container mt-4">
-  <ngb-accordion>
-    <ngb-panel title="Profile Plot">
-      <ng-template ngbPanelContent>
-        <plotly-plot [data]="graphData" [layout]="graphLayout" [updateOnLayoutChange]="true" [updateOnDataChange]="true"></plotly-plot>
-      </ng-template>
-    </ngb-panel>
-  </ngb-accordion>
-</div>
+<plotly-plot [data]="graphData" [layout]="graphLayout" [updateOnLayoutChange]="true" [updateOnDataChange]="true"></plotly-plot>

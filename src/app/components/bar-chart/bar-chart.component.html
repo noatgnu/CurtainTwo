@@ -34,7 +34,7 @@
 
 <div class="mt-2">
   <ngb-accordion>
-    <ngb-panel title="Anova One-Way Test">
+    <ngb-panel title="Additional Individual Statistical Test">
       <ng-template ngbPanelContent>
         <div class="row">
           <div class="col-3">
@@ -53,10 +53,18 @@
               </option>
             </select>
           </div>
+          <div class="col-3">
+            <label for="testType{{_data[dataService.rawForm.primaryIDs]}}">Test Type</label>
+            <select [(ngModel)]="testType" class="form-control" id="testType{{_data[dataService.rawForm.primaryIDs]}}">
+              <option [value]="d" *ngFor="let d of dataService.dataTestTypes">
+                {{d}}
+              </option>
+            </select>
+          </div>
         </div>
         <div class="row mt-2">
           <div class="col-3">
-            <button class="btn btn-primary" (click)="performTest('anova')">Perform Test</button>
+            <button class="btn btn-primary" (click)="performTest()">Perform Test</button>
           </div>
         </div>
         <table *ngIf="conditionA !== '' && conditionB !== '' && comparisons.length > 0" class="mt-2 table table-striped table-bordered">

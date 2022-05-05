@@ -17,6 +17,7 @@ export class RawDataBlockComponent implements OnInit {
   primaryID = ""
   foundIn: string[] = []
   active = 2
+  annotateTrigger: boolean = false
   @Input() set data(value: any) {
     this._data = value
     this.primaryID = this._data[this.dataService.rawForm.primaryIDs]
@@ -57,5 +58,12 @@ export class RawDataBlockComponent implements OnInit {
         this.dataService.selectedComparison = this.dataService.selectedComparison.splice(ind, 1)
       }
     }
+  }
+
+  annotate() {
+    this.dataService.annotationService.next({
+      id: this.primaryID,
+      remove: !this.annotateTrigger
+    })
   }
 }

@@ -4,7 +4,7 @@ import {Series} from "data-forge";
 import {UniprotService} from "../../uniprot.service";
 import {PlotlyService} from "angular-plotly.js";
 import {WebService} from "../../web.service";
-import {AnovaService} from "../../anova.service";
+import {StatsService} from "../../stats.service";
 
 @Component({
   selector: 'app-bar-chart',
@@ -18,6 +18,7 @@ export class BarChartComponent implements OnInit {
   conditionA: string = ""
   conditionB: string = ""
   conditions: string[] = []
+  testType: string = "ANOVA"
   @Input() set data(value: any) {
     this._data = value
     this.title = "<b>" + this._data[this.dataService.rawForm.primaryIDs] + "</b>"
@@ -93,7 +94,7 @@ export class BarChartComponent implements OnInit {
     },
     margin: {r: 40, l: 40, b: 120, t: 100}
   }
-  constructor(private anova: AnovaService, private web: WebService, public dataService: DataService, private uniprot: UniprotService) {
+  constructor(private stats: StatsService, private web: WebService, public dataService: DataService, private uniprot: UniprotService) {
     this.dataService.finishedProcessingData.subscribe(data => {
       if (data) {
 
@@ -248,12 +249,16 @@ export class BarChartComponent implements OnInit {
     this.graphDataViolin = graphViolin
   }
 
-  performTest(testType: string) {
+  performTest() {
     const a = this.graph[this.conditionA]
     const b = this.graph[this.conditionB]
-    switch (testType) {
-      case "anova":
-        this.comparisons = [{a: this.conditionA, b: this.conditionB, comparison: this.anova.calculateAnova(a.y, b.y)}]
+    switch (this.testType) {
+      case "ANOVA":
+        this.comparisons = [{a: this.conditionA, b: this.conditionB, comparison: this.stats.calculateAnova(a.y, b.y)}]
+        break
+      case "TTest":
+        console.log(this.stats.calculateTTest(a.y, b.y))
+        this.comparisons = [{a: this.conditionA, b: this.conditionB, comparison: this.stats.calculateTTest(a.y, b.y)}]
         break
     }
   }

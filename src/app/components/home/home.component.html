@@ -43,7 +43,15 @@
 </nav>
 <app-file-form (finished)="handleFinish($event)"></app-file-form>
 
-<app-profile-plot [data]="data.raw.df" *ngIf="data.raw.df.count() > 0 && finished"></app-profile-plot>
+<div class="container mt-4" *ngIf="data.raw.df.count() > 0 && finished">
+  <ngb-accordion>
+    <ngb-panel title="Profile Plot">
+      <ng-template ngbPanelContent>
+        <app-profile-plot [data]="data.raw.df"></app-profile-plot>
+      </ng-template>
+    </ngb-panel>
+  </ngb-accordion>
+</div>
 
 <app-protein-selections (searchResult)="handleSearch($event)"></app-protein-selections>
 

@@ -13,7 +13,6 @@ export class RawDataViewerComponent implements OnInit {
 
   @Input() set data(value: IDataFrame) {
     this._data = value
-
   }
   constructor(public dataService: DataService) { }
 

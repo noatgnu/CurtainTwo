@@ -31,6 +31,8 @@ export class VolcanoPlotComponent implements OnInit {
     xMin: 0, xMax: 0, yMin: 0, yMax: 0
   }
 
+  annotated: any = {}
+
   defaultColorList = [
     '#1f77b4',
     '#ff7f0e',
@@ -295,13 +297,24 @@ export class VolcanoPlotComponent implements OnInit {
       this.graphLayout.shapes = cutOff
     }
     this.graphData = graphData.reverse()
-
+    this.removeAnnotatedDataPoints([])
   }
 
   constructor(private dataService: DataService, private uniprot: UniprotService, public settings: SettingsService, private modal: NgbModal) {
+    this.annotated = this.dataService.annotatedData
     this.dataService.selectionUpdateTrigger.asObservable().subscribe(data => {
       if (data) {
         this.drawVolcano()
+      }
+    })
+    this.dataService.annotationService.asObservable().subscribe(data => {
+      if (data) {
+        if (data.remove) {
+          this.removeAnnotatedDataPoints([data.id])
+        } else {
+          this.annotateDataPoints([data.id])
+        }
+        this.dataService.annotatedData = this.annotated
       }
     })
   }
@@ -327,5 +340,55 @@ export class VolcanoPlotComponent implements OnInit {
 
   openCustomColor() {
     this.modal.open(VolcanoColorsComponent)
+  }
+
+  annotateDataPoints(data: string[]) {
+    const annotations: any[] = []
+    const annotatedData = this.dataService.currentDF.where(r => data.includes(r[this.dataService.differentialForm.primaryIDs])).bake()
+    for (const a of annotatedData) {
+      let title = a[this.dataService.differentialForm.primaryIDs]
+      const uni = this.uniprot.getUniprotFromPrimary(title)
+      if (uni) {
+        if (uni["Gene names"] !== "") {
+          title = uni["Gene names"] + "(" + title + ")"
+        }
+      }
+      if (!this.annotated[title]) {
+        const ann: any = {
+          xref: 'x',
+          yref: 'y',
+          x: a[this.dataService.differentialForm.foldChange],
+          y: a[this.dataService.differentialForm.significant],
+          text: "<b>"+title+"</b>",
+          showarrow: true,
+          arrowhead: 0.5,
+          font: {
+            size: 15
+          }
+        }
+        annotations.push(ann)
+        this.annotated[title] = ann
+      }
+    }
+
+    if (annotations.length > 0) {
+      this.graphLayout.annotations = this.graphLayout.annotations.concat(annotations)
+    }
+  }
+
+  removeAnnotatedDataPoints(data: string[]) {
+    for (const d of data) {
+      let title = d
+      const uni = this.uniprot.getUniprotFromPrimary(title)
+      if (uni) {
+        if (uni["Gene names"] !== "") {
+          title = uni["Gene names"] + "(" + title + ")"
+        }
+      }
+      if (this.annotated[title]) {
+        delete this.annotated[title]
+      }
+    }
+    this.graphLayout.annotations = Object.values(this.annotated)
   }
 }

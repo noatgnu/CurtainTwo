@@ -20,6 +20,11 @@ export class DataService {
   primaryIDsMap: any = {}
   selectedComparison: string[] = []
   conditions: string[] = []
+  dataTestTypes: string[] = [
+    "ANOVA",
+    //"TTest"
+  ]
+  annotatedData: any = {}
   get allGenes(): string[] {
     return this._allGenes;
   }
@@ -53,6 +58,7 @@ export class DataService {
   selectOperationNames: string[] = []
   primaryIDsList: string[] = []
   restoreTrigger: Subject<boolean> = new Subject<boolean>()
+  annotationService: Subject<any> = new Subject<any>()
   constructor(private uniprot: UniprotService, private settings: SettingsService) { }
   minMax: any = {
     fcMin: 0,
