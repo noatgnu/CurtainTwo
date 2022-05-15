@@ -1,7 +1,7 @@
 
 <div class="row">
   <div class="col-6">
-    <plotly-plot [data]="graphData" [layout]="graphLayout" [updateOnDataChange]="true" [updateOnLayoutChange]="true" (plotlyClick)="selectData($event)"></plotly-plot>
+    <plotly-plot [divId]="'volcanoPlot'" [data]="graphData" [layout]="graphLayout" [updateOnDataChange]="true" [updateOnLayoutChange]="true" (plotlyClick)="selectData($event)"></plotly-plot>
   </div>
   <div class="col-6">
     <div class="card">
@@ -40,6 +40,7 @@
                 <button ngbDropdownItem (click)="drawVolcano()">Redraw Plot</button>
                 <button ngbDropdownItem (click)="FDRCurveSettings()">Custom FDR Curve</button>
                 <button ngbDropdownItem (click)="openCustomColor()">Custom Legend Color</button>
+                <button ngbDropdownItem (click)="download()">Download SVG</button>
               </div>
             </div>
           </div>
@@ -47,6 +48,4 @@
       </div>
     </div>
   </div>
-
-
 </div>

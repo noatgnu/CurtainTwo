@@ -64,6 +64,16 @@ export class FileFormComponent implements OnInit {
       this.updateProgressBar(sampleNumber*100/totalSampleNumber, "Processed "+s+" sample data")
     }
 
+    let colorPosition = 0
+    const colorMap: any = {}
+    for (const c of conditions) {
+      if (colorPosition >= this.data.defaultColorList.length) {
+        colorPosition = 0
+      }
+      colorMap[c] = this.data.defaultColorList[colorPosition]
+      colorPosition++
+    }
+    this.data.colorMap = colorMap
     this.data.conditions = conditions
     this.data.differential.df = this.toUpperCaseColumn(this.data.differentialForm.primaryIDs, this.data.differential.df)
     this.data.raw.df = this.toUpperCaseColumn(this.data.rawForm.primaryIDs, this.data.raw.df)

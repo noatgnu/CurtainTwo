@@ -14,4 +14,5 @@ export class Settings {
   currentID: string = ""
   fdrCurveText: string = ""
   fdrCurveTextEnable: boolean = false
+  sampleAnnotations: any = {}
 }

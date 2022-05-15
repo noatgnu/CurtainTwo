@@ -16,6 +16,7 @@ import {ProfileCompareComponent} from "../profile-compare/profile-compare.compon
 import {CorrelationMatrixComponent} from "../correlation-matrix/correlation-matrix.component";
 import {ToastService} from "../../toast.service";
 import {CitationComponent} from "../citation/citation.component";
+import {SampleAnnotationComponent} from "../sample-annotation/sample-annotation.component";
 
 @Component({
   selector: 'app-home',
@@ -147,6 +148,9 @@ export class HomeComponent implements OnInit {
     if (typeof object.settings === "string") {
       object.settings = JSON.parse(object.settings)
     }
+    if (!object.settings.sampleAnnotations) {
+      object.settings.sampleAnnotations = {}
+    }
     console.log(object)
     if (object.settings.version) {
       if (object.settings.version === 2) {
@@ -242,6 +246,13 @@ export class HomeComponent implements OnInit {
 
   openResourceCitation() {
     this.modal.open(CitationComponent)
+  }
+
+  openAnnotation() {
+    const ref = this.modal.open(SampleAnnotationComponent)
+    ref.closed.subscribe(data => {
+      this.settings.settings.sampleAnnotations = data
+    })
   }
 }
 

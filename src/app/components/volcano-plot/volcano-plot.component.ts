@@ -7,6 +7,7 @@ import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {FdrCurveComponent} from "../fdr-curve/fdr-curve.component";
 import {VolcanoColorsComponent} from "../volcano-colors/volcano-colors.component";
 import {selectionData} from "../protein-selections/protein-selections.component";
+import {WebService} from "../../web.service";
 
 @Component({
   selector: 'app-volcano-plot',
@@ -33,17 +34,6 @@ export class VolcanoPlotComponent implements OnInit {
 
   annotated: any = {}
 
-  defaultColorList = [
-    '#1f77b4',
-    '#ff7f0e',
-    '#2ca02c',
-    '#d62728',
-    '#9467bd',
-    '#8c564b',
-    '#e377c2',
-    '#7f7f7f',
-    '#bcbd22',
-    '#17becf']
 
   @Input() set data(value: IDataFrame) {
     this._data = value
@@ -74,13 +64,13 @@ export class VolcanoPlotComponent implements OnInit {
       if (!this.settings.settings.colorMap[s]) {
         while (true) {
           if (this.breakColor) {
-            this.settings.settings.colorMap[s] = this.defaultColorList[currentPosition]
+            this.settings.settings.colorMap[s] = this.dataService.defaultColorList[currentPosition]
             break
           }
-          if (currentColors.indexOf(this.defaultColorList[currentPosition]) !== -1) {
+          if (currentColors.indexOf(this.dataService.defaultColorList[currentPosition]) !== -1) {
             currentPosition ++
-          } else if (currentPosition !== this.defaultColorList.length) {
-            this.settings.settings.colorMap[s] = this.defaultColorList[currentPosition]
+          } else if (currentPosition !== this.dataService.defaultColorList.length) {
+            this.settings.settings.colorMap[s] = this.dataService.defaultColorList[currentPosition]
             break
           } else {
             this.breakColor = true
@@ -89,7 +79,7 @@ export class VolcanoPlotComponent implements OnInit {
         }
 
         currentPosition ++
-        if (currentPosition === this.defaultColorList.length) {
+        if (currentPosition === this.dataService.defaultColorList.length) {
           currentPosition = 0
         }
       }
@@ -165,9 +155,9 @@ export class VolcanoPlotComponent implements OnInit {
         const group = this.dataService.significantGroup(x, y)
         if (!temp[group]) {
           if (!this.settings.settings.colorMap[group]) {
-            this.settings.settings.colorMap[group] = this.defaultColorList[currentPosition]
+            this.settings.settings.colorMap[group] = this.dataService.defaultColorList[currentPosition]
             currentPosition ++
-            if (currentPosition === this.defaultColorList.length) {
+            if (currentPosition === this.dataService.defaultColorList.length) {
               currentPosition = 0
             }
           }
@@ -300,7 +290,7 @@ export class VolcanoPlotComponent implements OnInit {
     this.removeAnnotatedDataPoints([])
   }
 
-  constructor(private dataService: DataService, private uniprot: UniprotService, public settings: SettingsService, private modal: NgbModal) {
+  constructor(private web: WebService, private dataService: DataService, private uniprot: UniprotService, public settings: SettingsService, private modal: NgbModal) {
     this.annotated = this.dataService.annotatedData
     this.dataService.selectionUpdateTrigger.asObservable().subscribe(data => {
       if (data) {
@@ -353,6 +343,7 @@ export class VolcanoPlotComponent implements OnInit {
           title = uni["Gene names"] + "(" + title + ")"
         }
       }
+
       if (!this.annotated[title]) {
         const ann: any = {
           xref: 'x',
@@ -390,5 +381,9 @@ export class VolcanoPlotComponent implements OnInit {
       }
     }
     this.graphLayout.annotations = Object.values(this.annotated)
+  }
+
+  download() {
+    this.web.downloadPlotlyImage("svg", "volcano","volcanoPlot")
   }
 }

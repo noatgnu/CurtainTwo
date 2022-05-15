@@ -35,6 +35,7 @@ import { ExperimentalArtComponent } from './components/experimental-art/experime
 import { CorrelationMatrixComponent } from './components/correlation-matrix/correlation-matrix.component';
 import { ToastContainerComponent } from './components/toast-container/toast-container.component';
 import { CitationComponent } from './components/citation/citation.component';
+import { SampleAnnotationComponent } from './components/sample-annotation/sample-annotation.component';
 PlotlyModule.plotlyjs = PlotlyJS;
 @NgModule({
   declarations: [
@@ -65,7 +66,8 @@ PlotlyModule.plotlyjs = PlotlyJS;
     ExperimentalArtComponent,
     CorrelationMatrixComponent,
     ToastContainerComponent,
-    CitationComponent
+    CitationComponent,
+    SampleAnnotationComponent
   ],
     imports: [
         BrowserModule,

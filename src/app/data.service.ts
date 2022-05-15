@@ -11,6 +11,14 @@ import {BehaviorSubject, debounceTime, distinctUntilChanged, map, Observable, Op
   providedIn: 'root'
 })
 export class DataService {
+  get colorMap(): any {
+    console.log(this._colorMap)
+    return this._colorMap;
+  }
+
+  set colorMap(value: any) {
+    this._colorMap = value;
+  }
   finishedProcessingData: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false)
   selectionUpdateTrigger: Subject<boolean> = new Subject<boolean>()
   dataMap: Map<string, string> = new Map<string, string>()
@@ -28,6 +36,19 @@ export class DataService {
   get allGenes(): string[] {
     return this._allGenes;
   }
+  defaultColorList = [
+    '#1f77b4',
+    '#ff7f0e',
+    '#2ca02c',
+    '#d62728',
+    '#9467bd',
+    '#8c564b',
+    '#e377c2',
+    '#7f7f7f',
+    '#bcbd22',
+    '#17becf'
+  ]
+  private _colorMap: any ={}
 
   set allGenes(value: string[]) {
     this._allGenes = value;

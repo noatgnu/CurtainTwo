@@ -124,6 +124,12 @@ export class BarChartComponent implements OnInit {
         graph[condition] = {
           x: [],
           y: [],
+          marker: {
+            "color": this.dataService.colorMap[condition]
+          },
+          line: {
+            color: "black"
+          },
           type: "bar",
           name: condition,
           showlegend: false
@@ -216,6 +222,11 @@ export class BarChartComponent implements OnInit {
         meanline: {
           visible: true
         },
+        line: {
+          color: "black"
+        },
+        fillcolor: this.dataService.colorMap[g]
+        ,
         name: g,
         showlegend: false,
         spanmode: 'soft'
@@ -233,6 +244,12 @@ export class BarChartComponent implements OnInit {
           type: 'data',
           array: [standardError],
           visible: true
+        },
+        marker: {
+          "color": this.dataService.colorMap[g]
+        },
+        line: {
+          color: "black"
         },
         //visible: temp[t].visible,
         showlegend: false

@@ -74,6 +74,10 @@ export class ProfilePlotComponent implements OnInit {
         temp[condition] = {
           x: [],
           y: [],
+          line: {
+            color: 'black'
+          },
+          fillcolor: this.dataService.colorMap[condition],
           boxpoints: false,
           type: 'box',
           showlegend: false
