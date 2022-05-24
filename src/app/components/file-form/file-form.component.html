@@ -100,7 +100,10 @@
             </div>
           </div>
         </div>
-
+        <div class="form-group mb-2 mt-2">
+          <label><b>Session Description</b></label>
+          <quill-editor [(ngModel)]="settings.settings.description"></quill-editor>
+        </div>
         <div class="row mt-4">
           <div class="col">
             <button class="btn btn-primary" (click)="processFiles()">Submit</button>
@@ -117,17 +120,8 @@
             {{progressBar.text}}
           </ngb-progressbar>
         </p>
-
       </ng-template>
     </ngb-panel>
   </ngb-accordion>
 </div>
 
-<div class="container mt-4">
-  <div class="row">
-    <div class="col">
-      <label for="description">Session Description</label>
-      <textarea class="form-control" id="description" [(ngModel)]="settings.settings.description"></textarea>
-    </div>
-  </div>
-</div>

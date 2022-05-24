@@ -12,7 +12,7 @@
               <button ngbDropdownItem (click)="clearSelections()">Clear Selections</button>
               <button ngbDropdownItem (click)="web.downloadFile('different.txt', data.differential.originalFile)">Download Differential Analysis File</button>
               <button ngbDropdownItem (click)="web.downloadFile('raw.txt', data.raw.originalFile)">Download Raw File</button>
-              <button ngbDropdownItem (click)="openAnnotation()">Sample Annotation</button>
+              <button ngbDropdownItem (click)="openAnnotation()">Project Annotation</button>
               <button ngbDropdownItem (click)="openCorrelationMatrix()">
                 Correlation Matrix
               </button>
@@ -42,6 +42,9 @@
     </ng-container>
   </div>
 </nav>
+
+<app-pride></app-pride>
+
 <app-file-form (finished)="handleFinish($event)"></app-file-form>
 
 <div class="container mt-4" *ngIf="data.raw.df.count() > 0 && finished">
@@ -53,6 +56,8 @@
     </ngb-panel>
   </ngb-accordion>
 </div>
+
+
 
 <app-protein-selections (searchResult)="handleSearch($event)"></app-protein-selections>
 

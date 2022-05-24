@@ -17,6 +17,7 @@ import {CorrelationMatrixComponent} from "../correlation-matrix/correlation-matr
 import {ToastService} from "../../toast.service";
 import {CitationComponent} from "../citation/citation.component";
 import {SampleAnnotationComponent} from "../sample-annotation/sample-annotation.component";
+import {Project} from "../../classes/project";
 
 @Component({
   selector: 'app-home',
@@ -148,8 +149,11 @@ export class HomeComponent implements OnInit {
     if (typeof object.settings === "string") {
       object.settings = JSON.parse(object.settings)
     }
-    if (!object.settings.sampleAnnotations) {
-      object.settings.sampleAnnotations = {}
+    if (!object.settings.project) {
+      object.settings.project = new Project()
+    }
+    if (!object.settings.prideAccession) {
+      object.settings.prideAccession = ""
     }
     console.log(object)
     if (object.settings.version) {
@@ -249,9 +253,9 @@ export class HomeComponent implements OnInit {
   }
 
   openAnnotation() {
-    const ref = this.modal.open(SampleAnnotationComponent)
+    const ref = this.modal.open(SampleAnnotationComponent, {size: "lg"})
     ref.closed.subscribe(data => {
-      this.settings.settings.sampleAnnotations = data
+      this.settings.settings.project = data
     })
   }
 }

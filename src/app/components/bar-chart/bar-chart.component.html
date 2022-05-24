@@ -20,6 +20,14 @@
     <div class="card">
       <div class="card-body">
         <plotly-plot [divId]="_data[dataService.rawForm.primaryIDs]+'average'" [data]="graphDataAverage" [layout]="graphLayoutAverage" [updateOnDataChange]="true" [updateOnLayoutChange]="true"></plotly-plot>
+        <div class="row">
+          <div class="col-6">
+            <select class="form-control" [(ngModel)]="barChartErrorType" (change)="drawAverageBarChart()">
+              <option value="Standard Error">Standard Error</option>
+              <option value="Standard Deviation">Standard Deviation</option>
+            </select>
+          </div>
+        </div>
       </div>
     </div>
   </div>

@@ -98,4 +98,12 @@ export class WebService {
     const plot = await this.plotly.getPlotly()
     await plot.downloadImage(graph, {format: format, filename: filename})
   }
+
+  getPrideData(accession: string) {
+    return this.http.get("https://www.ebi.ac.uk/pride/ws/archive/v2/projects/"+accession, {
+      responseType: "json",
+      observe: "body", headers: {
+        "accept": "application/json"
+      }})
+  }
 }

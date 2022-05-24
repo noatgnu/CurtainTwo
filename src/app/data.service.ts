@@ -12,7 +12,6 @@ import {BehaviorSubject, debounceTime, distinctUntilChanged, map, Observable, Op
 })
 export class DataService {
   get colorMap(): any {
-    console.log(this._colorMap)
     return this._colorMap;
   }
 

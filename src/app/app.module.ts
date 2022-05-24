@@ -36,6 +36,8 @@ import { CorrelationMatrixComponent } from './components/correlation-matrix/corr
 import { ToastContainerComponent } from './components/toast-container/toast-container.component';
 import { CitationComponent } from './components/citation/citation.component';
 import { SampleAnnotationComponent } from './components/sample-annotation/sample-annotation.component';
+import { PrideComponent } from './components/pride/pride.component';
+import {QuillModule} from "ngx-quill";
 PlotlyModule.plotlyjs = PlotlyJS;
 @NgModule({
   declarations: [
@@ -67,7 +69,8 @@ PlotlyModule.plotlyjs = PlotlyJS;
     CorrelationMatrixComponent,
     ToastContainerComponent,
     CitationComponent,
-    SampleAnnotationComponent
+    SampleAnnotationComponent,
+    PrideComponent
   ],
     imports: [
         BrowserModule,
@@ -77,7 +80,8 @@ PlotlyModule.plotlyjs = PlotlyJS;
         HttpClientModule,
         PlotlyModule,
         ReactiveFormsModule,
-        ColorPickerModule
+        ColorPickerModule,
+        QuillModule.forRoot()
     ],
   providers: [HttpClient],
   bootstrap: [AppComponent]

@@ -1,0 +1,77 @@
+<div class="container mb-4" *ngIf="settings.settings.project.title !== ''">
+  <ngb-accordion>
+    <ngb-panel title="{{settings.settings.project.title}}">
+      <ng-template ngbPanelContent>
+
+        <b>Project Description</b> <br>
+        <quill-view [content]="settings.settings.project.projectDescription"></quill-view>
+
+        <p>
+          <b>Organism</b> <br>
+          <ng-container *ngFor="let o of settings.settings.project.organisms">
+            <span>{{o.name}}</span><br>
+          </ng-container>
+        </p>
+        <p>
+          <b>Organism Parts</b> <br>
+          <ng-container *ngFor="let o of settings.settings.project.organismParts">
+            <span>{{o.name}}</span><br>
+          </ng-container>
+        </p>
+        <b>Sample Processing Protocol</b> <br>
+        <quill-view [content]="settings.settings.project.sampleProcessingProtocol"></quill-view>
+        <b>Data Processing Protocol</b> <br>
+        <quill-view [content]="settings.settings.project.dataProcessingProtocol"></quill-view>
+
+        <p *ngIf="settings.settings.project.identifiedPTMStrings.length > 0">
+          <b>Identified PTMs</b> <br>
+          <ng-container *ngFor="let s of settings.settings.project.identifiedPTMStrings">
+            <span class="text-danger">
+            {{s.name}}
+          </span><br>
+          </ng-container>
+        </p>
+
+        <div class="row">
+          <div class="col-6">
+            <div class="card" style="height: 100%">
+              <div class="card-body">
+                <p class="display-6 card-title">Additional Information</p>
+                <ul>
+                  <ng-container *ngFor="let a of settings.settings.project.instruments">
+                    <li>
+                      <b>{{a.cvLabel}} Instrument:</b> {{a.name}}
+                    </li>
+                  </ng-container>
+                  <ng-container *ngIf="settings.settings.project.hasLink">
+                    <li>
+                      <b>PRIDE Dataset FTP URL: </b> <a href="{{settings.settings.project._links.datasetFtpUrl.href}}" class="text-link">FTP Link</a>
+                    </li>
+                    <li>
+                      <b>PRIDE File URL: </b> <a href="{{settings.settings.project._links.files.href}}" class="text-link">File Link</a>
+                    </li>
+                    <li>
+                      <b>PRIDE Project Link: </b> <a href="{{settings.settings.project._links.self.href}}" class="text-link">Project Link</a>
+                    </li>
+                  </ng-container>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="card" style="height: 100%">
+              <div class="card-body">
+                <p class="display-6 card-title">Affiliations</p>
+                <ul>
+                  <li *ngFor="let a of settings.settings.project.affiliations">
+                    {{a}}
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </ng-template>
+    </ngb-panel>
+  </ngb-accordion>
+</div>
