@@ -32,6 +32,7 @@
     "jeezy": "^1.13.1",
     "jstat": "^1.9.5",
     "ngx-color-picker": "^12.0.1",
+    "ngx-print": "^1.2.1",
     "ngx-quill": "^16.2.1",
     "p5": "^1.4.1",
     "plotly.js": "^2.11.1",

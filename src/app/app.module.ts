@@ -38,6 +38,7 @@ import { CitationComponent } from './components/citation/citation.component';
 import { SampleAnnotationComponent } from './components/sample-annotation/sample-annotation.component';
 import { PrideComponent } from './components/pride/pride.component';
 import {QuillModule} from "ngx-quill";
+import {NgxPrintModule} from "ngx-print";
 PlotlyModule.plotlyjs = PlotlyJS;
 @NgModule({
   declarations: [
@@ -81,7 +82,8 @@ PlotlyModule.plotlyjs = PlotlyJS;
         PlotlyModule,
         ReactiveFormsModule,
         ColorPickerModule,
-        QuillModule.forRoot()
+        QuillModule.forRoot(),
+      NgxPrintModule
     ],
   providers: [HttpClient],
   bootstrap: [AppComponent]
