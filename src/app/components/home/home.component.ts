@@ -258,5 +258,10 @@ export class HomeComponent implements OnInit {
       this.settings.settings.project = data
     })
   }
+
+  getSelectedList() {
+    this.web.downloadFile("SelectedPrimaryIDs.txt", this.data.selected.join("\n"))
+    this.web.downloadFile("SelectedGenes.txt", this.data.selectedGenes.join("\n"))
+  }
 }
 

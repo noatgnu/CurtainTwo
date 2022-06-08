@@ -313,14 +313,30 @@ export class VolcanoPlotComponent implements OnInit {
   }
 
   selectData(e: any) {
+    console.log(e)
     if ("points" in e) {
-      const unid = this.nameToID[e["points"][0].text]
-      this.selected.emit(
-        {
-          data: [unid],
-          title: e["points"][0].text
+      const selected: string[] = []
+      for (const p of e["points"]) {
+        if (this.nameToID[p.text] !== "") {
+          selected.push(this.nameToID[p.text])
         }
-      )
+      }
+      if (selected.length === 1) {
+        this.selected.emit(
+          {
+            data: selected,
+            title: e["points"][0].text
+          }
+        )
+      } else {
+        this.selected.emit(
+          {
+            data: selected,
+            title: "Selected " + selected.length + " genes."
+          }
+        )
+      }
+
     }
   }
 
