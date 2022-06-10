@@ -3,6 +3,7 @@ import {DataFrame, IDataFrame, Series} from "data-forge";
 import {DataService} from "../../data.service";
 import {UniprotService} from "../../uniprot.service";
 import {ToastService} from "../../toast.service";
+import {SettingsService} from "../../settings.service";
 
 @Component({
   selector: 'app-profile-plot',
@@ -42,9 +43,19 @@ export class ProfilePlotComponent implements OnInit {
     showlegend: true
   }
   graphSelected: any[] = []
-  constructor(private toast: ToastService, private dataService: DataService, private uniprot: UniprotService) {
+  constructor(private toast: ToastService, private dataService: DataService, private uniprot: UniprotService, private settings: SettingsService) {
     this.dataService.selectionUpdateTrigger.asObservable().subscribe(data => {
       this.drawSelected().then()
+    })
+    this.dataService.redrawTrigger.subscribe(data => {
+      if (data) {
+        if (this._data.count() > 0) {
+          this.drawBoxPlot().then(r => {
+            this.graphData = this.graphBox
+            this.drawSelected().then()
+          })
+        }
+      }
     })
   }
 
@@ -68,23 +79,25 @@ export class ProfilePlotComponent implements OnInit {
     const ticktext: string[] = []
     const temp: any = {}
     for (const s in this.dataService.sampleMap) {
-      sampleNumber ++
-      const condition = this.dataService.sampleMap[s].condition
-      if (!temp[condition]) {
-        temp[condition] = {
-          x: [],
-          y: [],
-          line: {
-            color: 'black'
-          },
-          fillcolor: this.dataService.colorMap[condition],
-          boxpoints: false,
-          type: 'box',
-          showlegend: false
+      if (this.settings.settings.sampleVisible[s]) {
+        sampleNumber ++
+        const condition = this.dataService.sampleMap[s].condition
+        if (!temp[condition]) {
+          temp[condition] = {
+            x: [],
+            y: [],
+            line: {
+              color: 'black'
+            },
+            fillcolor: this.dataService.colorMap[condition],
+            boxpoints: false,
+            type: 'box',
+            showlegend: false
+          }
         }
+        temp[condition].x = temp[condition].x.concat(Array(this._data.count()).fill(s))
+        temp[condition].y = temp[condition].y.concat(this._data.getSeries(s).bake().toArray().map(a=> Math.log2(a)))
       }
-      temp[condition].x = temp[condition].x.concat(Array(this._data.count()).fill(s))
-      temp[condition].y = temp[condition].y.concat(this._data.getSeries(s).bake().toArray().map(a=> Math.log2(a)))
     }
 
     for (const t in temp) {
@@ -118,8 +131,10 @@ export class ProfilePlotComponent implements OnInit {
         name: name
       }
       for (const i in this.dataService.sampleMap) {
-        temp.x.push(i)
-        temp.y.push(Math.log2(r[i]))
+        if (this.settings.settings.sampleVisible[i]) {
+          temp.x.push(i)
+          temp.y.push(Math.log2(r[i]))
+        }
       }
       graphData.push(temp)
     }

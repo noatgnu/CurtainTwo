@@ -50,8 +50,19 @@ export class FileFormComponent implements OnInit {
     }
     const totalSampleNumber = this.data.rawForm.samples.length
     let sampleNumber = 0
+    let samples: string[] = []
+    const conditionOrder = this.settings.settings.conditionOrder.slice()
+    if (conditionOrder.length > 0) {
+      for (const c of conditionOrder) {
+        for (const s of this.settings.settings.sampleOrder[c]) {
+          samples.push(s)
+        }
+      }
+    } else {
+      samples = this.data.rawForm.samples.slice()
+    }
     const conditions: string[] = []
-    for (const s of this.data.rawForm.samples) {
+    for (const s of samples) {
       const condition_replicate = s.split(".")
       const replicate = condition_replicate[condition_replicate.length-1]
       const condition = condition_replicate.slice(0, condition_replicate.length-1).join(".")
@@ -59,11 +70,23 @@ export class FileFormComponent implements OnInit {
         conditions.push(condition)
       }
       this.data.sampleMap[s] = {replicate: replicate, condition: condition}
+      if (!this.settings.settings.sampleOrder[condition]) {
+        this.settings.settings.sampleOrder[condition] = []
+      }
+      if (!this.settings.settings.sampleOrder[condition].includes(s)) {
+        this.settings.settings.sampleOrder[condition].push(s)
+      }
+
+      if (!(s in this.settings.settings.sampleVisible)) {
+        this.settings.settings.sampleVisible[s] = true
+      }
       this.data.raw.df = this.data.raw.df.withSeries(s, new Series(this.convertToNumber(this.data.raw.df.getSeries(s).toArray()))).bake()
       sampleNumber ++
       this.updateProgressBar(sampleNumber*100/totalSampleNumber, "Processed "+s+" sample data")
     }
-
+    if (this.settings.settings.conditionOrder.length === 0) {
+      this.settings.settings.conditionOrder = conditions
+    }
     let colorPosition = 0
     const colorMap: any = {}
     for (const c of conditions) {

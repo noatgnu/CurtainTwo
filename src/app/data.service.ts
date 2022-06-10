@@ -31,6 +31,7 @@ export class DataService {
     "ANOVA",
     //"TTest"
   ]
+  redrawTrigger: Subject<boolean> = new Subject()
   annotatedData: any = {}
   get allGenes(): string[] {
     return this._allGenes;

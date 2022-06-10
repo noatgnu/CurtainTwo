@@ -18,6 +18,7 @@ import {ToastService} from "../../toast.service";
 import {CitationComponent} from "../citation/citation.component";
 import {SampleAnnotationComponent} from "../sample-annotation/sample-annotation.component";
 import {Project} from "../../classes/project";
+import {SampleOrderAndHideComponent} from "../sample-order-and-hide/sample-order-and-hide.component";
 
 @Component({
   selector: 'app-home',
@@ -136,6 +137,7 @@ export class HomeComponent implements OnInit {
       fetchUniprot: this.data.fetchUniprot,
       annotatedData: this.data.annotatedData
     }
+    console.log(data.settings)
     this.web.putSettings(data).subscribe(data => {
       if (data.body) {
         this.settings.settings.currentID = data.body
@@ -149,13 +151,22 @@ export class HomeComponent implements OnInit {
     if (typeof object.settings === "string") {
       object.settings = JSON.parse(object.settings)
     }
+    console.log(object.settings)
     if (!object.settings.project) {
       object.settings.project = new Project()
     }
     if (!object.settings.prideAccession) {
       object.settings.prideAccession = ""
     }
-    console.log(object)
+    if (!object.settings.sampleOrder) {
+      object.settings.sampleOrder = {}
+    }
+    if (!object.settings.sampleVisible) {
+      object.settings.sampleVisible = {}
+    }
+    if (!object.settings.conditionOrder) {
+      object.settings.conditionOrder = []
+    }
     if (object.settings.version) {
       if (object.settings.version === 2) {
         this.data.selected = object.selections
@@ -262,6 +273,11 @@ export class HomeComponent implements OnInit {
   getSelectedList() {
     this.web.downloadFile("SelectedPrimaryIDs.txt", this.data.selected.join("\n"))
     this.web.downloadFile("SelectedGenes.txt", this.data.selectedGenes.join("\n"))
+  }
+
+  openSampleSettings() {
+    const ref = this.modal.open(SampleOrderAndHideComponent)
+
   }
 }
 
